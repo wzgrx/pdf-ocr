@@ -19,5 +19,3 @@ fi
 
 # Start the application with gunicorn (single worker for GPU)
 exec gunicorn --bind 0.0.0.0:5000 --workers 1 --threads 4 --timeout 600 app:app
-
-# 注意：这里及之后不应该再有任何内容，如包列表
