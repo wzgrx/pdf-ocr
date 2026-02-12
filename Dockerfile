@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.6.3-cudnn-runtime-ubuntu24.04
+FROM nvidia/cuda:13.0.2-cudnn-devel-ubuntu24.04 AS base
 
 # Prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
@@ -25,8 +25,8 @@ WORKDIR /app
 # Install PaddlePaddle GPU first (requires special index)
 # PaddleOCR-VL-1.5 requires PaddlePaddle 3.2.1+
 RUN pip3 install --no-cache-dir --break-system-packages \
-    paddlepaddle-gpu==3.2.1 \
-    -i https://www.paddlepaddle.org.cn/packages/stable/cu126/
+    paddlepaddle-gpu==3.3.0 \
+    -i https://www.paddlepaddle.org.cn/packages/stable/cu130/
 
 # Copy and install other requirements
 COPY requirements.txt .
