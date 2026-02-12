@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.6.3-cudnn-runtime-ubuntu24.04
+FROM nvidia/cuda:13.0.2-cudnn-devel-ubuntu24.04 AS base
 
 # Prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
@@ -22,21 +22,25 @@ RUN apt-get update && apt-get install -y \
 # Create app directory
 WORKDIR /app
 
+# 首先显示构建上下文中的文件（调试）
+COPY . .
+RUN echo "=== 构建上下文文件列表 ===" && \
+    ls -la && \
+    echo "=== entrypoint.sh详情 ===" && \
+    ls -la entrypoint.sh && \
+    echo "=== entrypoint.sh内容（前10行）===" && \
+    head -10 entrypoint.sh
+
 # Install PaddlePaddle GPU first (requires special index)
 # PaddleOCR-VL-1.5 requires PaddlePaddle 3.2.1+
 RUN pip3 install --no-cache-dir --break-system-packages \
-    paddlepaddle-gpu==3.2.1 \
-    -i https://www.paddlepaddle.org.cn/packages/stable/cu126/
+    paddlepaddle-gpu==3.3.0 \
+    -i https://www.paddlepaddle.org.cn/packages/stable/cu130/
 
-# Copy and install other requirements
-COPY requirements.txt .
+# Install other requirements
 RUN pip3 install --no-cache-dir --break-system-packages -r requirements.txt
 
-# Copy application code
-COPY app.py .
-COPY s2t_dict.py .
-COPY static/ static/
-COPY entrypoint.sh .
+# Ensure entrypoint.sh has execute permission
 RUN chmod +x entrypoint.sh
 
 # Create output directory
