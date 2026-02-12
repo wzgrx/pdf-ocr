@@ -5,6 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Taipei
 
 # Install system dependencies
+# 修改 1: 加入 dos2unix
 RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
@@ -17,6 +18,7 @@ RUN apt-get update && apt-get install -y \
     libxext6 \
     libxrender-dev \
     libgomp1 \
+    dos2unix \
     && rm -rf /var/lib/apt/lists/*
 
 # Create app directory
@@ -41,7 +43,8 @@ RUN pip3 install --no-cache-dir --break-system-packages \
 RUN pip3 install --no-cache-dir --break-system-packages -r requirements.txt
 
 # Ensure entrypoint.sh has execute permission
-RUN chmod +x entrypoint.sh
+# 修改 2: 執行 dos2unix 轉換格式，並給予執行權限
+RUN dos2unix entrypoint.sh && chmod +x entrypoint.sh
 
 # Create output directory
 RUN mkdir -p /tmp/pdf_ocr_output
